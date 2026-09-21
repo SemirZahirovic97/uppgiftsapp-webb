@@ -29,3 +29,31 @@
   max-width: 100%;
   border-radius: 6px;
 }
+
+.add-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.add-form input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.add-form button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: #3b5bdb;
+  color: white;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .add-form {
+    flex-direction: column;
+  }
+}
