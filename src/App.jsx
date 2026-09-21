@@ -46,12 +46,32 @@ function App() {
     }
   }
 
+  async function updateTask(updatedTask) {
+    try {
+      const response = await fetch(`${API_URL}/api/tasks/${updatedTask.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedTask),
+      });
+      if (!response.ok) {
+        throw new Error('Servern svarade med fel');
+      }
+      const saved = await response.json();
+      setTasks(tasks.map((t) => (t.id === saved.id ? saved : t)));
+      setError('');
+      return true;
+    } catch {
+      setError('Kunde inte uppdatera uppgiften. Kontrollera att API:et körs.');
+      return false;
+    }
+  }
+
   return (
     <div className="app">
       <h1>Mina uppgifter</h1>
       {error && <div className="error">{error}</div>}
       <AddTaskForm onAdd={addTask} />
-      <TaskList tasks={tasks} />
+      <TaskList tasks={tasks} onUpdate={updateTask} />
     </div>
   );
 }

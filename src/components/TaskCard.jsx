@@ -1,14 +1,66 @@
+import { useState } from 'react';
 import { API_URL } from '../api';
 
-function TaskCard({ task }) {
+function TaskCard({ task, onUpdate }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [title, setTitle] = useState(task.title);
+  const [description, setDescription] = useState(task.description);
+
+  async function toggleDone() {
+    await onUpdate({ ...task, isDone: !task.isDone });
+  }
+
+  async function save() {
+    if (!title.trim()) {
+      return;
+    }
+    const success = await onUpdate({ ...task, title, description });
+    if (success) {
+      setIsEditing(false);
+    }
+  }
+
+  function cancel() {
+    setTitle(task.title);
+    setDescription(task.description);
+    setIsEditing(false);
+  }
+
+  if (isEditing) {
+    return (
+      <div className="task-card">
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        <input
+          type="text"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+        <div className="card-buttons">
+          <button onClick={save}>Spara</button>
+          <button className="secondary" onClick={cancel}>Avbryt</button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="task-card">
-      <h3>{task.title}</h3>
+      <h3 className={task.isDone ? 'done' : ''}>{task.title}</h3>
       <p>{task.description}</p>
-      <p>{task.isDone ? 'Klar' : 'Ej klar'}</p>
+      <label className="done-label">
+        <input type="checkbox" checked={task.isDone} onChange={toggleDone} />
+        Klar
+      </label>
       {task.imageUrl && (
         <img src={`${API_URL}${task.imageUrl}`} alt={task.title} />
       )}
+      <div className="card-buttons">
+        <button onClick={() => setIsEditing(true)}>Redigera</button>
+      </div>
     </div>
   );
 }
