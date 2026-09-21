@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { API_URL } from '../api';
 
-function TaskCard({ task, onUpdate }) {
+function TaskCard({ task, onUpdate, onUpload }) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description);
@@ -24,6 +24,15 @@ function TaskCard({ task, onUpdate }) {
     setTitle(task.title);
     setDescription(task.description);
     setIsEditing(false);
+  }
+
+  async function handleFile(event) {
+    const file = event.target.files[0];
+    if (!file) {
+      return;
+    }
+    await onUpload(task.id, file);
+    event.target.value = '';
   }
 
   if (isEditing) {
@@ -58,6 +67,10 @@ function TaskCard({ task, onUpdate }) {
       {task.imageUrl && (
         <img src={`${API_URL}${task.imageUrl}`} alt={task.title} />
       )}
+      <label className="upload">
+        Ladda upp bild
+        <input type="file" accept="image/*" onChange={handleFile} />
+      </label>
       <div className="card-buttons">
         <button onClick={() => setIsEditing(true)}>Redigera</button>
       </div>

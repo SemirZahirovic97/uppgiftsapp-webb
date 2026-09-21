@@ -66,12 +66,34 @@ function App() {
     }
   }
 
+  async function uploadImage(id, file) {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch(`${API_URL}/api/tasks/${id}/image`, {
+        method: 'POST',
+        body: formData,
+      });
+      if (!response.ok) {
+        throw new Error('Servern svarade med fel');
+      }
+      const saved = await response.json();
+      setTasks(tasks.map((t) => (t.id === saved.id ? saved : t)));
+      setError('');
+      return true;
+    } catch {
+      setError('Kunde inte ladda upp bilden. Kontrollera att filen är en bild och att API:et körs.');
+      return false;
+    }
+  }
+
   return (
     <div className="app">
       <h1>Mina uppgifter</h1>
       {error && <div className="error">{error}</div>}
       <AddTaskForm onAdd={addTask} />
-      <TaskList tasks={tasks} onUpdate={updateTask} />
+      <TaskList tasks={tasks} onUpdate={updateTask} onUpload={uploadImage} />
     </div>
   );
 }
